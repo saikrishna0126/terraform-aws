@@ -132,7 +132,29 @@ resource "aws_instance" "demo" {
   associate_public_ip_address = true
 }
 
+# Resource block for creating EBS volumes
+resource "aws_ebs_volume" "demo-ebs" {
+  count             = length(var.instance_names)
+  # Size of the EBS volume in gigabytes
+  size              = var.ebs_volume_size
+  # Type of EBS volume (e.g., gp2, io1)
+  type              = var.ebs_volume_type
+  # Availability zone for the volume
+  availability_zone = element(local.availability_zone, count.index)
+  # Tagging the EBS volume
+  tags = {
+    Name = "demo-ebs-${count.index + 1}"
+  }
+}
 
-
-
+# Resource block for attaching EBS volumes to instances
+resource "aws_volume_attachment" "demo-ebs-attachment" {
+  count       = length(var.instance_names)
+  # ID of the instance
+  instance_id = aws_instance.demo[count.index].id
+  # ID of the EBS volume to attach
+  volume_id   = aws_ebs_volume.demo-ebs[count.index].id
+  # Device name to attach the volume to on the instance (e.g., /dev/sdf)
+  device_name = var.ebs_device_name
+}
 
