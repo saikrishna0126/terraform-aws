@@ -60,3 +60,18 @@ variable "ami_id" {
   default     = ""
   description = ""
 }
+
+variable "ebs_volume_size" {
+  description = "The size of the EBS volume in gigabytes"
+  type        = number
+}
+
+variable "ebs_volume_type" {
+  description = "The type of EBS volume (e.g., gp2, io1)"
+  type        = string
+}
+
+variable "ebs_device_name" {
+  description = "The device name to attach the EBS volume to on the instance (e.g., /dev/sdf)"
+  type        = string
+}
