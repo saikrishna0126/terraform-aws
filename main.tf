@@ -158,3 +158,31 @@ resource "aws_volume_attachment" "demo-ebs-attachment" {
   device_name = var.ebs_device_name
 }
 
+# Define your RDS security group
+resource "aws_security_group" "my_rds_sg" {
+  name        = "my-rds-sg"
+  description = "Security group for RDS instance"
+  vpc_id      = aws_vpc.demo-vpc.id
+  ingress {
+    from_port   = 3306
+    to_port     = 3306
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+}
+# Define your RDS subnet group
+resource "aws_db_subnet_group" "my_db_subnet_group" {
+  name       = "my-db-subnet-group"
+  subnet_ids = [for subnet in aws_subnet.private-subnet : subnet.id]
+  tags = {
+    Name = "MyDBSubnetGroup"
+  }
+}
+
+
